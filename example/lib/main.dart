@@ -47,10 +47,6 @@ class _MyHomePageState extends State<MyHomePage> {
         nickname: "Amir Jabbari",
       ),
     );
-
-    crispMain.setMessage("Amir");
-    // crispMain.appendScript("console.log(\$crisp.get('session:identifier'))");
-    // crispMain.appendScript("console.log(\$crisp.get())");
   }
 
   @override

@@ -78,6 +78,17 @@ class _CrispViewState extends State<CrispView> {
     widget.crispMain.commands.clear();
   }
 
+  void getSessionId() async {
+    await Future.delayed(const Duration(seconds: 3));
+    String? sessionId = await _webViewController?.evaluateJavascript(
+        source: 'window.\$crisp.get("session:identifier")');
+    if (sessionId != null && widget.onSessionIdReceived != null) {
+      widget.onSessionIdReceived!(sessionId);
+      return;
+    }
+    if (sessionId == null) getSessionId();
+  }
+
   @override
   Widget build(BuildContext context) {
     return InAppWebView(
@@ -100,6 +111,7 @@ class _CrispViewState extends State<CrispView> {
       },
       onLoadStop: (InAppWebViewController controller, Uri? url) async {
         _webViewController?.evaluateJavascript(source: _javascriptString!);
+        getSessionId();
       },
       shouldOverrideUrlLoading: (controller, navigationAction) async {
         var uri = navigationAction.request.url;
