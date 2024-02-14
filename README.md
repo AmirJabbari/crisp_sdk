@@ -1,39 +1,78 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# Crisp SDK Dart Package
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages).
-
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages).
--->
-
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+This package provides a Dart interface for the Crisp chat SDK.
 
 ## Features
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
-
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+- Set user details such as email, nickname, avatar, and phone number.
+- Register a new user to start the chat.
+- Set a message text.
+- Set user segments.
+- Set session data.
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
+First, import the package:
 
 ```dart
-const like = 'sample';
+import 'package:crisp_sdk/models/user.dart';
 ```
 
-## Additional information
+Then, create a CrispMain object:
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+```dart
+CrispMain crispMain = CrispMain(
+  websiteId: 'your_website_id',
+  locale: 'en',
+  userToken: 'user_token',
+);
+```
+
+```dart
+  @override
+Widget build(BuildContext context) {
+  return CrispView(
+    crispMain: crispMain,
+    clearCache: true,
+    onSessionIdReceived: (sessionId) {
+      print('------------- sessionIdCrisp  --------------');
+      print(sessionId);
+    },
+  );
+}
+}
+
+```
+
+You can set user details using the register method:
+
+```dart
+crispMain.register(
+  user: CrispUser(
+    email: 'user_email',
+    nickname: 'user_nickname',
+    avatar: 'user_avatar_url',
+    phone: 'user_phone_number',
+  ),
+);
+```
+
+You can set a message text using the setMessage method:
+
+```dart
+crispMain.setMessage('Hello, world!');
+```
+You can set user segments using the setSegments method:
+```dart
+crispMain.setSegments(['segment1', 'segment2']);
+```
+You can set session data using the setData method:
+```dart
+crispMain.setData({'key1': 'value1', 'key2': 'value2'});
+```
+
+Contributing
+Contributions are welcome! Please read our contributing guidelines to get started.
+
+License
+This project is licensed under the terms of the MIT license. See the LICENSE file for details.
