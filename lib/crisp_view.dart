@@ -39,7 +39,8 @@ class CrispView extends StatefulWidget {
   @override
   _CrispViewState createState() => _CrispViewState();
 
-  CrispView({
+  const CrispView({
+    super.key,
     required this.crispMain,
     this.clearCache = false,
     this.onLinkPressed,
@@ -49,7 +50,6 @@ class CrispView extends StatefulWidget {
 }
 
 class _CrispViewState extends State<CrispView> {
-  InAppWebViewController? _webViewController;
   String? _javascriptString;
 
   late InAppWebViewSettings _options;
@@ -78,10 +78,11 @@ class _CrispViewState extends State<CrispView> {
     widget.crispMain.commands.clear();
   }
 
-  void getSessionId() async {
+  Future<void> getSessionId() async {
     await Future.delayed(const Duration(seconds: 3));
-    String? sessionId = await _webViewController?.evaluateJavascript(
-        source: 'window.\$crisp.get("session:identifier")');
+    String? sessionId = await widget.crispMain.webViewController
+        ?.evaluateJavascript(
+            source: 'window.\$crisp.get("session:identifier")');
     if (sessionId != null && widget.onSessionIdReceived != null) {
       widget.onSessionIdReceived!(sessionId);
       return;
@@ -107,10 +108,11 @@ class _CrispViewState extends State<CrispView> {
       ),
       initialSettings: _options,
       onWebViewCreated: (InAppWebViewController controller) {
-        _webViewController = controller;
+        widget.crispMain.webViewController = controller;
       },
       onLoadStop: (InAppWebViewController controller, Uri? url) async {
-        _webViewController?.evaluateJavascript(source: _javascriptString!);
+        widget.crispMain.webViewController
+            ?.evaluateJavascript(source: _javascriptString!);
         getSessionId();
       },
       shouldOverrideUrlLoading: (controller, navigationAction) async {

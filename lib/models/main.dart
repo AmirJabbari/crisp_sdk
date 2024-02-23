@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:crisp_sdk/models/user.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 /// The main model for the [CrispView]
 class CrispMain {
@@ -13,6 +14,8 @@ class CrispMain {
     this.locale = locale;
     this.userToken = userToken;
   }
+
+  InAppWebViewController? webViewController;
 
   /// The id of your crisp chat
   final String websiteId;
@@ -81,6 +84,11 @@ class CrispMain {
       (key, value) => appendScript(
           'window.\$crisp.push(["set", "session:data", ["$key", "$value"]]);'),
     );
+  }
+
+  logout() {
+    webViewController?.evaluateJavascript(
+        source: "window.\$crisp.push([\"do\", \"session:reset\"])");
   }
 
   void appendScript(String script) {
