@@ -8,16 +8,15 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Flutter Crisp',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Flutter Crisp Chat Example'),
     );
   }
 }
@@ -32,17 +31,17 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late CrispMain crispMain;
+  late CrispController crispController;
 
   @override
   void initState() {
     super.initState();
 
-    crispMain = CrispMain(
+    crispController = CrispController(
       websiteId: 'f41e1e5f-3631-4dce-9797-3e875eade4d9',
     );
 
-    crispMain.register(
+    crispController.register(
       user: CrispUser(
         email: "Amir@provider.com",
         nickname: "Amir Jabbari",
@@ -57,13 +56,16 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      floatingActionButton: FloatingActionButton(onPressed: () {
-        crispMain.logout();
-      }),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.logout),
+        onPressed: () async {
+          crispController.logout();
+        },
+      ),
       body: Center(
         child: CrispView(
-          crispMain: crispMain,
-          clearCache: true,
+          crispController: crispController,
+          clearCache: false,
           onSessionIdReceived: (sessionId) {
             print('------------- sessionIdCrisp  --------------');
             print(sessionId);

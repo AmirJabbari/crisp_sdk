@@ -1,39 +1,31 @@
+import 'package:crisp_sdk/common/crisp_helper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'models/main.dart';
-
-const CRISP_BASE_URL = 'https://go.crisp.chat';
-
-String _crispEmbedUrl({
-  required String websiteId,
-  required String locale,
-  String? userToken,
-}) {
-  String url = '$CRISP_BASE_URL/chat/embed/?website_id=$websiteId';
-
-  url += '&locale=$locale';
-  if (userToken != null) url += '&token_id=$userToken';
-
-  return url;
-}
+import 'controller/crisp_controller.dart';
 
 /// The main widget to provide the view of the chat
 class CrispView extends StatefulWidget {
-  /// Model with main settings of this chat
-  final CrispMain crispMain;
+  /// The controller to manage the chat
+  final CrispController crispController;
 
   /// Set to true to have all the browser's cache cleared before the new WebView is opened. The default value is false.
   final bool clearCache;
+
+  /// A callback that is invoked when a link is pressed.
   final void Function(String url)? onLinkPressed;
 
   ///Set to true to make the background of the WebView transparent.
   ///If your app has a dark theme,
   ///this can prevent a white flash on initialization. The default value is false.
   final bool transparentBackground;
+
+  /// A callback that is invoked when the session id is received.
+  /// This is useful to track the user's session.
+  /// The session id is a unique identifier for the user's session.
   final void Function(String sessionId)? onSessionIdReceived;
 
   @override
@@ -41,7 +33,7 @@ class CrispView extends StatefulWidget {
 
   const CrispView({
     super.key,
-    required this.crispMain,
+    required this.crispController,
     this.clearCache = false,
     this.onLinkPressed,
     this.transparentBackground = false,
@@ -69,25 +61,16 @@ class _CrispViewState extends State<CrispView> {
     _javascriptString = """
       var a = setInterval(function(){
         if (typeof \$crisp !== 'undefined'){
-          ${widget.crispMain.commands.join(';\n')}
+          ${widget.crispController.commands.join(';\n')}
           clearInterval(a);
         }
       },500)
       """;
-
-    widget.crispMain.commands.clear();
-  }
-
-  Future<void> getSessionId() async {
-    await Future.delayed(const Duration(seconds: 3));
-    String? sessionId = await widget.crispMain.webViewController
-        ?.evaluateJavascript(
-            source: 'window.\$crisp.get("session:identifier")');
-    if (sessionId != null && widget.onSessionIdReceived != null) {
+    widget.crispController.onSessionIdReceived = (sessionId) {
       widget.onSessionIdReceived!(sessionId);
-      return;
-    }
-    if (sessionId == null) getSessionId();
+    };
+
+    widget.crispController.commands.clear();
   }
 
   @override
@@ -100,20 +83,23 @@ class _CrispViewState extends State<CrispView> {
           ),
         ),
       initialUrlRequest: URLRequest(
-        url: WebUri(_crispEmbedUrl(
-          websiteId: widget.crispMain.websiteId,
-          locale: widget.crispMain.locale,
-          userToken: widget.crispMain.userToken,
-        )),
+        url: WebUri(
+          CrispHelper().crispEmbedUrl(
+            websiteId: widget.crispController.websiteId,
+            locale: widget.crispController.locale,
+            userToken: widget.crispController.userToken,
+          ),
+        ),
       ),
       initialSettings: _options,
       onWebViewCreated: (InAppWebViewController controller) {
-        widget.crispMain.webViewController = controller;
+        widget.crispController.webViewController = controller;
       },
       onLoadStop: (InAppWebViewController controller, Uri? url) async {
-        widget.crispMain.webViewController
+        widget.crispController.webViewController
             ?.evaluateJavascript(source: _javascriptString!);
-        getSessionId();
+        await Future.delayed(const Duration(seconds: 3));
+        widget.crispController.getSessionId();
       },
       shouldOverrideUrlLoading: (controller, navigationAction) async {
         var uri = navigationAction.request.url;
@@ -131,11 +117,11 @@ class _CrispViewState extends State<CrispView> {
             "javascript",
             "about"
           ].contains(uri?.scheme)) {
-            if (await canLaunch(url)) {
-              if (widget.onLinkPressed != null)
+            if (await canLaunchUrl(Uri.parse(url))) {
+              if (widget.onLinkPressed != null) {
                 widget.onLinkPressed!(url);
-              else {
-                await launch(url);
+              } else {
+                await launchUrl(Uri.parse(url));
               }
               return NavigationActionPolicy.CANCEL;
             }
