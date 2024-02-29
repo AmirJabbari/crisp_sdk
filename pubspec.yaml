@@ -2,7 +2,7 @@ name: crisp_sdk
 description: "Crisp SDK for user can use Crisp chat in their flutter app."
 version: 1.1.0
 homepage: "https://github.com/AmirJabbari/crisp_sdk"
-publish_to: "pub.dev"
+repository: "https://github.com/AmirJabbari/crisp_sdk"
 
 environment:
   sdk: '>=3.2.3 <4.0.0'
