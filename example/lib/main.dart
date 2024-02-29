@@ -38,7 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
 
     crispController = CrispController(
-      websiteId: 'f41e1e5f-3631-4dce-9797-3e875eade4d9',
+      websiteId: 'your-website-id',
     );
 
     crispController.register(
