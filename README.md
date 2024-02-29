@@ -18,13 +18,12 @@ First, import the package:
 import 'package:crisp_sdk/models/user.dart';
 ```
 
-Then, create a CrispMain object:
+Then, create a CrispController
 
 ```dart
-CrispMain crispMain = CrispMain(
+CrispController controller = CrispController(
   websiteId: 'your_website_id',
   locale: 'en',
-  userToken: 'user_token',
 );
 ```
 
@@ -32,7 +31,7 @@ CrispMain crispMain = CrispMain(
   @override
 Widget build(BuildContext context) {
   return CrispView(
-    crispMain: crispMain,
+    crispController: controller,
     clearCache: true,
     onSessionIdReceived: (sessionId) {
       print('------------- sessionIdCrisp  --------------');
@@ -47,7 +46,7 @@ Widget build(BuildContext context) {
 You can set user details using the register method:
 
 ```dart
-crispMain.register(
+controller.register(
   user: CrispUser(
     email: 'user_email',
     nickname: 'user_nickname',
@@ -60,15 +59,23 @@ crispMain.register(
 You can set a message text using the setMessage method:
 
 ```dart
-crispMain.setMessage('Hello, world!');
+controller.setMessage('Hello, world!');
 ```
 You can set user segments using the setSegments method:
 ```dart
-crispMain.setSegments(['segment1', 'segment2']);
+controller.setSegments(['segment1', 'segment2']);
 ```
 You can set session data using the setData method:
 ```dart
-crispMain.setData({'key1': 'value1', 'key2': 'value2'});
+controller.setData({'key1': 'value1', 'key2': 'value2'});
+```
+You can get session id using the getSessionId method:
+```dart
+controller.getSessionId();
+```
+You can logout using the logout method:
+```dart
+controller.logout();
 ```
 
 Contributing
