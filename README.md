@@ -9,6 +9,8 @@ This package provides a Dart interface for the Crisp chat SDK.
 - Set a message text.
 - Set user segments.
 - Set session data.
+- Get session id.
+- Logout.
 
 ## Usage
 
