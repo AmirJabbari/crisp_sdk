@@ -135,7 +135,7 @@ class _CrispViewState extends State<CrispView> {
               else {
                 await launch(url);
               }
-              return NavigationActionPolicy.CANCEL;
+              return NavigationActionPolicy.ALLOW;
             }
           }
         }
