@@ -61,8 +61,11 @@ class CrispMain {
   }
 
   setMessage(String text) {
-    appendScript(
-        "window.\$crisp.push([\"set\", \"message:text\", [\"$text\"]])");
+    appendScript("window.\$crisp.push([\"set\", \"message:text\", [\"$text\"]])");
+  }
+
+  sendMessage(String message) {
+        appendScript("window.\$crisp.push(['do', 'message:send', ['text', '$message']])");
   }
 
   setSegments(List<String> segments) {
